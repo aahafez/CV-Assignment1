@@ -1,5 +1,5 @@
 from matplotlib.pyplot import imread
-image1 = imread("img/image1.png")
+image1 = imread("img/image1.png") # Converts image to 2D Array
 image2 = imread("img/image2.png")
 image3 = imread("img/image3.png")
 
