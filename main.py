@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 def ReadImage(name):
     print('Reading image:', name)
-    img = Image.open('img/' + name + '.png')
+    img = Image.open('img/' + name + '.png').convert('L')
     return img
 
 def PrintImageInfo(image):
@@ -17,22 +17,28 @@ def PrintImageInfo(image):
 def CalculateCooccurence(image):
     imgArr = np.array(image)
     height, width = imgArr.shape
-    matrix = [[0]*256]*256
-    for i in range(height-1):
+    matrix = np.zeros((256,256), dtype=int)
+    for i in range(height - 1):
         for j in range(width):
             index1 = imgArr[i][j]
             index2 = imgArr[i+1][j]
             matrix[index1][index2] += 1
-            #     image.putpixel((j,i),0)
     return matrix
+def CalculateContrast(matrix):
+    contrastNom = 0
+    contrastDom = 0
+    for i in range(256):
+        for j in range(256):
+            contrastNom += matrix[i][j] * abs(i-j)
+            contrastDom += abs(i-j)
+    return contrastNom / contrastDom
 
 image1 = ReadImage('image1')
 PrintImageInfo(np.array(image1))
 cooccurence = CalculateCooccurence(image1)
-print(cooccurence)
-
-def CalculateContrast():
-    pass
+# print(cooccurence)
+contrast = CalculateContrast(cooccurence)
+print("Contrast: ", contrast)
 
 def CalculateHistogram():
     pass
