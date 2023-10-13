@@ -14,8 +14,7 @@ def PrintImageInfo(image):
     print("Height: ", height, "px", sep="")
     print("Width: ", width, "px", sep="")
     print("----------------------------------------")
-def CalculateCooccurence(image):
-    imgArr = np.array(image)
+def CalculateCooccurence(imgArr):
     height, width = imgArr.shape
     matrix = np.zeros((256,256), dtype=int)
     for i in range(height - 1):
@@ -33,15 +32,28 @@ def CalculateContrast(matrix):
             contrastDom += abs(i-j)
     return contrastNom / contrastDom
 
-image1 = ReadImage('image1')
-PrintImageInfo(np.array(image1))
-cooccurence = CalculateCooccurence(image1)
+
+def CalculateHistogram(imgArr):
+    height, width = imgArr.shape
+    histogram = np.zeros(256)
+    for i in range(height):
+        for j in range(width):
+            index = imgArr[i][j]
+            histogram[index] += 1
+    x = range(256)
+    y = histogram
+    plt.plot(x,y)
+    plt.show()
+    return histogram
+
+image1 = ReadImage('image4')
+img1Arr = np.array(image1)
+PrintImageInfo(img1Arr)
+cooccurence = CalculateCooccurence(img1Arr)
 # print(cooccurence)
 contrast = CalculateContrast(cooccurence)
 print("Contrast: ", contrast)
-
-def CalculateHistogram():
-    pass
+CalculateHistogram(img1Arr)
 
 def CalculateCumulativeHistogram():
     pass
