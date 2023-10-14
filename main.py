@@ -40,11 +40,6 @@ def CalculateHistogram(imgArr):
         for j in range(width):
             index = imgArr[i][j]
             histogram[index] += 1
-    x = range(256)
-    y = histogram
-    plt.plot(x,y)
-    plt.title("Histogram")
-    plt.show()
     return histogram
 
 def CalculateCumulativeHistogram(histogram):
@@ -53,12 +48,15 @@ def CalculateCumulativeHistogram(histogram):
     for i in range(256):
         sum += histogram[i]
         cumulativeHistogram[i] = sum
-    x = range(256)
-    y = cumulativeHistogram
-    plt.plot(x, y)
-    plt.title("Cumulative Histogram")
-    plt.show()
     return cumulativeHistogram
+
+def plotHistogram(histogram, title):
+    plt.plot(range(256), histogram)
+    plt.title(title)
+    plt.show()
+
+def GetColorAtPercentage(cumHistogram, percentage):
+    pass
 
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
@@ -68,10 +66,10 @@ cooccurence = CalculateCooccurence(img1Arr)
 contrast = CalculateContrast(cooccurence)
 print("Contrast: ", contrast)
 hist = CalculateHistogram(img1Arr)
-CalculateCumulativeHistogram(hist)
+plotHistogram(hist, "Histogram")
+cumHist = CalculateCumulativeHistogram(hist)
+plotHistogram(cumHist, "Cumulative Histogram")
 
-def GetColorAtPercentage():
-    pass
 
 def StretchContrast():
     pass
