@@ -34,12 +34,10 @@ def CalculateContrast(matrix):
 
 
 def CalculateHistogram(imgArr):
-    height, width = imgArr.shape
     histogram = np.zeros(256)
-    for i in range(height):
-        for j in range(width):
-            index = imgArr[i][j]
-            histogram[index] += 1
+    for _ in imgArr:
+        for i in _:
+            histogram[i] += 1
     return histogram
 
 def CalculateCumulativeHistogram(histogram):
