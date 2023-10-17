@@ -54,7 +54,18 @@ def plotHistogram(histogram, title):
     plt.show()
 
 def GetColorAtPercentage(cumHistogram, percentage):
-    pass
+    value1 = cumHistogram[255] * percentage / 100
+    value2 = cumHistogram[255] * (100 - percentage) / 100
+    x, y = 0, 0
+    for i in range(256):
+        if cumHistogram[i] > value1:
+            x = i - 1
+            break
+    for i in range(256):
+        if cumHistogram[i] > value2:
+            y = i - 1
+            break
+    return x,y
 
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
@@ -67,7 +78,7 @@ hist = CalculateHistogram(img1Arr)
 plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
-
+print(GetColorAtPercentage(cumHist, 60))
 
 def StretchContrast():
     pass
