@@ -66,6 +66,18 @@ def GetColorAtPercentage(cumHistogram, percentage):
             y = i - 1
             break
     return x,y
+def EqualizeHistogram(imgArr, int1, int2):
+    equal_img = imgArr
+    hist = CalculateHistogram(imgArr)
+    cum_hist = CalculateCumulativeHistogram(hist)
+    height, width = imgArr.shape
+    pixels = height * width
+    for i in range(height):
+        for j in range(width):
+            if int1 <= imgArr[i][j] <= int2:
+                equalized = 255 * cum_hist[imgArr[i][j]] / pixels
+                equal_img[i][j] = equalized
+    return equal_img
 
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
@@ -79,12 +91,12 @@ plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
 print(GetColorAtPercentage(cumHist, 60))
-
+img = EqualizeHistogram(img1Arr, 50,200)
+# im = Image.fromarray(img)
+# im.save('output.png') #if you want to save the image for better visibility
 def StretchContrast():
     pass
 
-def EqualizeHistogram():
-    pass
 
 def GrayScaleTransformation():
     pass
