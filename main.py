@@ -14,6 +14,7 @@ def PrintImageInfo(image):
     print("Height: ", height, "px", sep="")
     print("Width: ", width, "px", sep="")
     print("----------------------------------------")
+
 def CalculateCooccurence(imgArr):
     height, width = imgArr.shape
     matrix = np.zeros((256,256), dtype=int)
@@ -23,6 +24,7 @@ def CalculateCooccurence(imgArr):
             index2 = imgArr[i+1][j]
             matrix[index1][index2] += 1
     return matrix
+
 def CalculateContrast(matrix):
     contrastNom = 0
     contrastDom = 0
@@ -31,7 +33,6 @@ def CalculateContrast(matrix):
             contrastNom += matrix[i][j] * abs(i-j)
             contrastDom += abs(i-j)
     return contrastNom / contrastDom
-
 
 def CalculateHistogram(imgArr):
     histogram = np.zeros(256)
@@ -66,8 +67,9 @@ def GetColorAtPercentage(cumHistogram, percentage):
             y = i - 1
             break
     return x,y
+
 def EqualizeHistogram(imgArr, int1, int2):
-    equal_img = imgArr
+    equal_img = np.copy(imgArr)
     hist = CalculateHistogram(imgArr)
     cum_hist = CalculateCumulativeHistogram(hist)
     height, width = imgArr.shape
@@ -79,25 +81,43 @@ def EqualizeHistogram(imgArr, int1, int2):
                 equal_img[i][j] = equalized
     return equal_img
 
+def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
+    transformedArr = np.copy(imgArr)
+    height, width = imgArr.shape
+    for i in range(height):
+        for j in range(width):
+            p = imgArr[i][j]
+            if p < x1:
+                transformedArr[i][j] = p * y1/x1
+            elif p < x2:
+                transformedArr[i][j] = ((p-x1) * (y2-y1)/(x2-x1)) + y1
+            else:
+                transformedArr[i][j] = ((p-x2) * (255-y2)/(255-x2)) + y2
+    return transformedArr
+
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
-PrintImageInfo(img1Arr)
-cooccurence = CalculateCooccurence(img1Arr)
-# print(cooccurence)
-contrast = CalculateContrast(cooccurence)
-print("Contrast: ", contrast)
+# PrintImageInfo(img1Arr)
+# cooccurence = CalculateCooccurence(img1Arr)
+# # print(cooccurence)
+# contrast = CalculateContrast(cooccurence)
+# print("Contrast: ", contrast)
 hist = CalculateHistogram(img1Arr)
 plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
-print(GetColorAtPercentage(cumHist, 60))
-img = EqualizeHistogram(img1Arr, 50,200)
-# im = Image.fromarray(img)
-# im.save('output.png') #if you want to save the image for better visibility
+plt.imshow(img1Arr, cmap='gray')
+plt.show()
+x1, x2 = GetColorAtPercentage(cumHist, 15)
+print(x1,x2)
+transformedImg = GrayScaleTransformation(img1Arr, x1, x2, 20, 190)
+plt.imshow(transformedImg, cmap='gray')
+plt.show()
+# equalizedImg = EqualizeHistogram(img1Arr, 50,200)
+# plt.imshow(equalizedImg, cmap='gray')
+# plt.show()
+
 def StretchContrast():
     pass
 
-
-def GrayScaleTransformation():
-    pass
 
