@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+
 def ReadImage(name):
     print('Reading image:', name)
     img = Image.open('img/' + name + '.png').convert('L')
@@ -14,6 +15,7 @@ def PrintImageInfo(image):
     print("Height: ", height, "px", sep="")
     print("Width: ", width, "px", sep="")
     print("----------------------------------------")
+
 def CalculateCooccurence(imgArr):
     height, width = imgArr.shape
     matrix = np.zeros((256,256), dtype=int)
@@ -23,6 +25,7 @@ def CalculateCooccurence(imgArr):
             index2 = imgArr[i+1][j]
             matrix[index1][index2] += 1
     return matrix
+
 def CalculateContrast(matrix):
     contrastNom = 0
     contrastDom = 0
@@ -31,7 +34,6 @@ def CalculateContrast(matrix):
             contrastNom += matrix[i][j] * abs(i-j)
             contrastDom += abs(i-j)
     return contrastNom / contrastDom
-
 
 def CalculateHistogram(imgArr):
     histogram = np.zeros(256)
@@ -56,21 +58,15 @@ def plotHistogram(histogram, title):
 def GetColorAtPercentage(cumHistogram, percentage):
     pass
 
-image1 = ReadImage('image4')
-img1Arr = np.array(image1)
-PrintImageInfo(img1Arr)
-cooccurence = CalculateCooccurence(img1Arr)
-# print(cooccurence)
-contrast = CalculateContrast(cooccurence)
-print("Contrast: ", contrast)
-hist = CalculateHistogram(img1Arr)
-plotHistogram(hist, "Histogram")
-cumHist = CalculateCumulativeHistogram(hist)
-plotHistogram(cumHist, "Cumulative Histogram")
-
-
-def StretchContrast():
-    pass
+def StretchContrast(imageArr, c, d):
+    a = 0
+    b = 255
+    height, width = imageArr.shape
+    newImage = Image.new('L', (width, height))
+    for i in range(height):
+        for j in range(width):
+            newImage.putpixel((j,i), int((imageArr[i,j] - c) * ((b-a) / (d - c)) + a))
+    return newImage
 
 def EqualizeHistogram():
     pass
@@ -78,3 +74,20 @@ def EqualizeHistogram():
 def GrayScaleTransformation():
     pass
 
+image1 = ReadImage('image4')
+img1Arr = np.array(image1)
+PrintImageInfo(img1Arr)
+cooccurence = CalculateCooccurence(img1Arr)
+# print("Cooccurence: ", cooccurence)
+contrast = CalculateContrast(cooccurence)
+print("Contrast: ", contrast)
+hist = CalculateHistogram(img1Arr)
+plotHistogram(hist, "Histogram")
+cumHist = CalculateCumulativeHistogram(hist)
+plotHistogram(cumHist, "Cumulative Histogram")
+c = input("Please enter value for c \n")
+d = input("Please enter value for d \n")
+contrastStretch = StretchContrast(img1Arr, int(c), int(d))
+plt.imshow(contrastStretch, cmap = "gray")
+plt.show()
+print("Done:)")
