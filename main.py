@@ -73,12 +73,18 @@ def EqualizeHistogram(imgArr, int1, int2):
     hist = CalculateHistogram(imgArr)
     cum_hist = CalculateCumulativeHistogram(hist)
     height, width = imgArr.shape
-    pixels = height * width
+    pixels = cum_hist[-1]
+    int_max = max(int1, int2)
+    f_min = cum_hist[min(int1, int2)]
     for i in range(height):
         for j in range(width):
-            if int1 <= imgArr[i][j] <= int2:
-                equalized = 255 * cum_hist[imgArr[i][j]] / pixels
-                equal_img[i][j] = equalized
+            # if int1 <= imgArr[i][j] <= int2:
+            equalized = int_max * (cum_hist[imgArr[i][j]] - f_min) / (pixels - f_min)
+            if equalized < 0:
+                equalized = 0
+            elif equalized > 255:
+                equalized = 255
+            equal_img[i][j] = equalized
     return equal_img
 
 def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
@@ -102,21 +108,21 @@ img1Arr = np.array(image1)
 # # print(cooccurence)
 # contrast = CalculateContrast(cooccurence)
 # print("Contrast: ", contrast)
-hist = CalculateHistogram(img1Arr)
+
+# plt.imshow(img1Arr, cmap='gray')
+# plt.show()
+# x1, x2 = GetColorAtPercentage(cumHist, 15)
+# print(x1,x2)
+# transformedImg = GrayScaleTransformation(img1Arr, x1, x2, 20, 190)
+# plt.imshow(transformedImg, cmap='gray')
+# plt.show()
+equalizedImg = EqualizeHistogram(img1Arr, 88,151)
+plt.imshow(equalizedImg, cmap='gray')
+plt.show()
+hist = CalculateHistogram(equalizedImg)
 plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
-plt.imshow(img1Arr, cmap='gray')
-plt.show()
-x1, x2 = GetColorAtPercentage(cumHist, 15)
-print(x1,x2)
-transformedImg = GrayScaleTransformation(img1Arr, x1, x2, 20, 190)
-plt.imshow(transformedImg, cmap='gray')
-plt.show()
-# equalizedImg = EqualizeHistogram(img1Arr, 50,200)
-# plt.imshow(equalizedImg, cmap='gray')
-# plt.show()
-
 def StretchContrast():
     pass
 
