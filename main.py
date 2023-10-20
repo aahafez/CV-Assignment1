@@ -86,6 +86,9 @@ def EqualizeHistogram(imgArr, int1, int2):
             elif equalized > 255:
                 equalized = 255
             equal_img[i][j] = equalized
+    plt.imshow(equal_img, cmap="gray")
+    plt.title("Post histogram equalization")
+    plt.show()
     return equal_img
 
 def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
@@ -100,6 +103,9 @@ def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
                 transformedArr[i][j] = ((p-x1) * (y2-y1)/(x2-x1)) + y1
             else:
                 transformedArr[i][j] = ((p-x2) * (255-y2)/(255-x2)) + y2
+    plt.imshow(transformedArr, cmap="gray")
+    plt.title("Post grayscale transformation")
+    plt.show()
     return transformedArr
 
 def StretchContrast(imageArr, a, b, c, d):
@@ -108,20 +114,68 @@ def StretchContrast(imageArr, a, b, c, d):
     for i in range(height):
         for j in range(width):
             newImage.putpixel((j,i), int((imageArr[i,j] - c) * ((b-a) / (d - c)) + a))
+    plt.imshow(newImage, cmap="gray")
+    plt.title("Post contrast stretching")
+    plt.show()
     return newImage
 
-image1 = ReadImage('image4')
-img1Arr = np.array(image1)
-# PrintImageInfo(img1Arr)
-# cooccurence = CalculateCooccurence(img1Arr)
-# # print("Cooccurence: ", cooccurence)
-# contrast = CalculateContrast(cooccurence)
-# print("Contrast: ", contrast)
+def plotHistograms(imgArr, title):
+    hist = CalculateHistogram(imgArr)
+    plotHistogram(hist, title + " Histogram")
+    cumHist = CalculateCumulativeHistogram(hist)
+    plotHistogram(cumHist, title + " Cumulative Histogram")
+    return cumHist
 
-contrastStretch = StretchContrast(img1Arr, 0,255, 88,151)
-hist = CalculateHistogram(np.array(contrastStretch))
-plotHistogram(hist, "Histogram")
-cumHist = CalculateCumulativeHistogram(hist)
-plotHistogram(cumHist, "Cumulative Histogram")
-plt.imshow(contrastStretch, cmap = "gray")
-plt.show()
+def test(imgName,percentage):
+    # Read image and convert it to a 2D Array
+    img = ReadImage(imgName)
+    imgArr = np.array(img)
+    # Calculate cooccurence, contrast and plot both histograms
+    cooccurence = CalculateCooccurence(imgArr)
+    contrast = CalculateContrast(cooccurence)
+    print("Contrast: ", contrast)
+    cumHist = plotHistograms(imgArr, "Original")
+    # Test Color at percentage with given percentage parameter
+    x, y = GetColorAtPercentage(cumHist, percentage)
+    print("X:", x)
+    print("Y:", y)
+    # Test contrast stretching and plot corresponding histograms
+    contrastStretch = StretchContrast(imgArr, 0, 255, x, y)
+    plotHistograms(np.array(contrastStretch), "Post contrast stretch")
+    # Test histogram equalization and plot corresponding histograms
+    equalHist = EqualizeHistogram(imgArr, x, y)
+    plotHistograms(equalHist, "Post histogram equalization")
+    # Test grayscale transformation and plot corresponding histograms
+    grayscaleTrans = GrayScaleTransformation(imgArr, x, y,0,255)
+    plotHistograms(grayscaleTrans, "Post grayscale transformation")
+    # Print test is done
+    text = "TEST IS DONE"
+    print(f'{text:-^40}')
+
+def groundTruth():
+    # Read image and convert it to a 2D Array
+    img = ReadImage('image4')
+    imgArr = np.array(img)
+    # Calculate cooccurence, contrast and plot both histograms
+    cooccurence = CalculateCooccurence(imgArr)
+    contrast = CalculateContrast(cooccurence)
+    print("Contrast: ", contrast)
+    cumHist = plotHistograms(imgArr, "Original")
+    x, y = 88, 151
+    print("X:", x)
+    print("Y:", y)
+    # Test contrast stretching and plot corresponding histograms
+    contrastStretch = StretchContrast(imgArr, 0, 255, x, y)
+    plotHistograms(np.array(contrastStretch), "Post contrast stretch")
+    # Test histogram equalization and plot corresponding histograms
+    equalHist = EqualizeHistogram(imgArr, x, y)
+    plotHistograms(equalHist, "Post histogram equalization")
+    # Test grayscale transformation and plot corresponding histograms
+    grayscaleTrans = GrayScaleTransformation(imgArr, x, y,0,255)
+    plotHistograms(grayscaleTrans, "Post grayscale transformation")
+    # Print test is done
+    text = "GROUND TRUTH TEST IS DONE"
+    print(f'{text:-^40}')
+
+test('image4', 5)
+# groundTruth()
