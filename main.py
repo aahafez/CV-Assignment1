@@ -58,9 +58,7 @@ def plotHistogram(histogram, title):
 def GetColorAtPercentage(cumHistogram, percentage):
     pass
 
-def StretchContrast(imageArr, c, d):
-    a = 0
-    b = 255
+def StretchContrast(imageArr, a, b, c, d):
     height, width = imageArr.shape
     newImage = Image.new('L', (width, height))
     for i in range(height):
@@ -76,18 +74,16 @@ def GrayScaleTransformation():
 
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
-PrintImageInfo(img1Arr)
-cooccurence = CalculateCooccurence(img1Arr)
-# print("Cooccurence: ", cooccurence)
-contrast = CalculateContrast(cooccurence)
-print("Contrast: ", contrast)
-hist = CalculateHistogram(img1Arr)
+# PrintImageInfo(img1Arr)
+# cooccurence = CalculateCooccurence(img1Arr)
+# # print("Cooccurence: ", cooccurence)
+# contrast = CalculateContrast(cooccurence)
+# print("Contrast: ", contrast)
+
+contrastStretch = StretchContrast(img1Arr, 0,255, 88,151)
+hist = CalculateHistogram(np.array(contrastStretch))
 plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
-c = input("Please enter value for c \n")
-d = input("Please enter value for d \n")
-contrastStretch = StretchContrast(img1Arr, int(c), int(d))
 plt.imshow(contrastStretch, cmap = "gray")
 plt.show()
-print("Done:)")
