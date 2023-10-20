@@ -56,7 +56,51 @@ def plotHistogram(histogram, title):
     plt.show()
 
 def GetColorAtPercentage(cumHistogram, percentage):
-    pass
+    value1 = cumHistogram[255] * percentage / 100
+    value2 = cumHistogram[255] * (100 - percentage) / 100
+    x, y = 0, 0
+    for i in range(256):
+        if cumHistogram[i] > value1:
+            x = i - 1
+            break
+    for i in range(256):
+        if cumHistogram[i] > value2:
+            y = i - 1
+            break
+    return x,y
+
+def EqualizeHistogram(imgArr, int1, int2):
+    equal_img = np.copy(imgArr)
+    hist = CalculateHistogram(imgArr)
+    cum_hist = CalculateCumulativeHistogram(hist)
+    height, width = imgArr.shape
+    pixels = cum_hist[-1]
+    int_max = max(int1, int2)
+    f_min = cum_hist[min(int1, int2)]
+    for i in range(height):
+        for j in range(width):
+            # if int1 <= imgArr[i][j] <= int2:
+            equalized = int_max * (cum_hist[imgArr[i][j]] - f_min) / (pixels - f_min)
+            if equalized < 0:
+                equalized = 0
+            elif equalized > 255:
+                equalized = 255
+            equal_img[i][j] = equalized
+    return equal_img
+
+def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
+    transformedArr = np.copy(imgArr)
+    height, width = imgArr.shape
+    for i in range(height):
+        for j in range(width):
+            p = imgArr[i][j]
+            if p < x1:
+                transformedArr[i][j] = p * y1/x1
+            elif p < x2:
+                transformedArr[i][j] = ((p-x1) * (y2-y1)/(x2-x1)) + y1
+            else:
+                transformedArr[i][j] = ((p-x2) * (255-y2)/(255-x2)) + y2
+    return transformedArr
 
 def StretchContrast(imageArr, a, b, c, d):
     height, width = imageArr.shape
@@ -65,12 +109,6 @@ def StretchContrast(imageArr, a, b, c, d):
         for j in range(width):
             newImage.putpixel((j,i), int((imageArr[i,j] - c) * ((b-a) / (d - c)) + a))
     return newImage
-
-def EqualizeHistogram():
-    pass
-
-def GrayScaleTransformation():
-    pass
 
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
