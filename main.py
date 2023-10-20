@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+
 def ReadImage(name):
     print('Reading image:', name)
     img = Image.open('img/' + name + '.png').convert('L')
@@ -101,29 +102,26 @@ def GrayScaleTransformation(imgArr, x1, x2, y1, y2):
                 transformedArr[i][j] = ((p-x2) * (255-y2)/(255-x2)) + y2
     return transformedArr
 
+def StretchContrast(imageArr, a, b, c, d):
+    height, width = imageArr.shape
+    newImage = Image.new('L', (width, height))
+    for i in range(height):
+        for j in range(width):
+            newImage.putpixel((j,i), int((imageArr[i,j] - c) * ((b-a) / (d - c)) + a))
+    return newImage
+
 image1 = ReadImage('image4')
 img1Arr = np.array(image1)
 # PrintImageInfo(img1Arr)
 # cooccurence = CalculateCooccurence(img1Arr)
-# # print(cooccurence)
+# # print("Cooccurence: ", cooccurence)
 # contrast = CalculateContrast(cooccurence)
 # print("Contrast: ", contrast)
 
-# plt.imshow(img1Arr, cmap='gray')
-# plt.show()
-# x1, x2 = GetColorAtPercentage(cumHist, 15)
-# print(x1,x2)
-# transformedImg = GrayScaleTransformation(img1Arr, x1, x2, 20, 190)
-# plt.imshow(transformedImg, cmap='gray')
-# plt.show()
-equalizedImg = EqualizeHistogram(img1Arr, 88,151)
-plt.imshow(equalizedImg, cmap='gray')
-plt.show()
-hist = CalculateHistogram(equalizedImg)
+contrastStretch = StretchContrast(img1Arr, 0,255, 88,151)
+hist = CalculateHistogram(np.array(contrastStretch))
 plotHistogram(hist, "Histogram")
 cumHist = CalculateCumulativeHistogram(hist)
 plotHistogram(cumHist, "Cumulative Histogram")
-def StretchContrast():
-    pass
-
-
+plt.imshow(contrastStretch, cmap = "gray")
+plt.show()
